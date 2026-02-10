@@ -4,25 +4,71 @@
 
 This repository tracks, analyzes, and documents Linux kernel version changes sourced from [kernelnewbies.org](https://kernelnewbies.org). It serves as a structured reference for understanding kernel evolution across releases, with a focus on the 6.x series (6.13–6.19+).
 
-The primary artifact is `kernel-changelog-6.13-6.19.md`, a comprehensive markdown report covering release timelines, per-version feature breakdowns, and cross-version trend analysis.
+The primary artifact is `changelogs/kernel-changelog-6.13-6.19.md`, a comprehensive markdown report covering release timelines, per-version feature breakdowns, and cross-version trend analysis.
 
 ## Repository Structure
 
 ```
 docs-kernel-newbies/
-├── CLAUDE.md                         # Project guide for AI assistants (English)
-├── kernel-changelog-6.13-6.19.md     # Main report: kernel 6.13–6.19 changes & trends (Korean)
-└── (future additions below)
+├── CLAUDE.md                          # Project guide for AI assistants (English)
+├── changelogs/                        # Per-version and multi-version changelog reports
+│   ├── kernel-changelog-6.13-6.19.md  #   Combined report: 6.13–6.19 (Korean)
+│   ├── kernel-changelog-6.20.md       #   Single version report example
+│   └── ...
+├── trends/                            # Cross-version trend analysis reports
+│   ├── kernel-trend-analysis-6.13-6.19.md
+│   └── ...
+└── references/                        # Supplementary reference material
+    ├── subsystem-overview.md           #   Kernel subsystem quick reference
+    └── ...
 ```
 
-> **Note**: The former `kernel-changelog-report.md` has been renamed to `kernel-changelog-6.13-6.19.md` per the file naming convention below.
+Directory purposes:
+- **`changelogs/`** — Version-specific changelog reports (single or multi-version)
+- **`trends/`** — Cross-version trend analysis and longitudinal studies
+- **`references/`** — Supplementary material: subsystem overviews, glossaries, LTS tracking
 
-## Data Source
+## Data Sources
 
-All kernel version data comes from **kernelnewbies.org**:
-- Version index: https://kernelnewbies.org/LinuxVersions
-- Per-version pages: `https://kernelnewbies.org/Linux_6.XX` (e.g., Linux_6.17)
-- The site follows a consistent structure: prominent features, then subsystem-by-subsystem breakdown (filesystems, memory management, networking, security, drivers, architecture, tracing/BPF, Rust support)
+Primary and supplementary sources for kernel analysis:
+
+| Source | URL | Usage |
+|--------|-----|-------|
+| kernelnewbies.org | https://kernelnewbies.org/LinuxVersions | Primary: per-version feature summaries |
+| Per-version pages | `https://kernelnewbies.org/Linux_6.XX` | Primary: subsystem-level breakdown |
+| kernel.org | https://kernel.org | Release dates, tarball info, LTS status |
+| LKML (mailing list) | https://lkml.org | Supplementary: patch discussions, design rationale |
+| LWN.net | https://lwn.net | Supplementary: in-depth feature analysis articles |
+| Git commit logs | `git log` on kernel source | Supplementary: commit messages, diffstats |
+
+## Research Requirements
+
+**All reports must be based on thorough, in-depth research.** Superficial summaries are not acceptable.
+
+### Research Methodology
+
+When creating or updating a report, follow this research process:
+
+1. **Primary source collection** — Fetch the kernelnewbies.org page for the target version and extract all listed changes per subsystem
+2. **Cross-reference verification** — Verify key claims (performance numbers, new syscalls, API changes) against at least one additional source (LWN.net, LKML, kernel commit logs)
+3. **Contextual analysis** — For each headline feature, understand *why* it was introduced (what problem it solves, what workloads benefit)
+4. **Quantitative data** — Actively seek out benchmark results, performance deltas, and measurable impacts; do not omit available numbers
+5. **Trend continuity** — Check how each change relates to ongoing multi-version trends (e.g., folio adoption, Rust expansion) and update trend tracking accordingly
+
+### Research Depth Expectations
+
+| Report Type | Minimum Research Depth |
+|-------------|----------------------|
+| Single-version changelog | Full kernelnewbies page + LWN feature articles for headline items |
+| Multi-version changelog | All individual version sources + cross-version diff analysis |
+| Trend analysis | All version sources + LKML discussions + commit history for the subsystem |
+
+### Quality Criteria
+- Every headline feature must include a one-sentence explanation of its purpose/impact
+- Performance claims must cite a source (kernelnewbies, LWN, or commit message)
+- New syscalls and APIs must include the call signature or usage context
+- Omissions are acceptable only when a subsystem has genuinely zero changes for a release
+- When information is uncertain or unverifiable, mark it explicitly (e.g., "확인 필요")
 
 ## Key Conventions
 
@@ -42,11 +88,12 @@ All report files follow this naming pattern:
 kernel-changelog-<version-range>.md
 ```
 
-| Type | Filename Example | Description |
-|------|------------------|-------------|
-| Multi-version report | `kernel-changelog-6.13-6.19.md` | Combined changelog across versions |
-| Single-version report | `kernel-changelog-6.20.md` | Individual version analysis |
-| Trend analysis | `kernel-trend-analysis-6.13-6.19.md` | Cross-version trend report |
+| Type | Directory | Filename Example | Description |
+|------|-----------|------------------|-------------|
+| Multi-version report | `changelogs/` | `kernel-changelog-6.13-6.19.md` | Combined changelog across versions |
+| Single-version report | `changelogs/` | `kernel-changelog-6.20.md` | Individual version analysis |
+| Trend analysis | `trends/` | `kernel-trend-analysis-6.13-6.19.md` | Cross-version trend report |
+| Reference material | `references/` | `subsystem-overview.md` | Supplementary docs |
 
 Rules:
 - Lowercase only, hyphen (`-`) as separator (no underscores `_`)
@@ -165,15 +212,16 @@ These are the major multi-release trajectories identified so far:
 
 ## Workflow for Adding a New Kernel Version
 
-1. Fetch the kernelnewbies page: `https://kernelnewbies.org/Linux_6.XX`
-2. Extract changes following the subsystem categories listed above
-3. Identify the top 5-7 headline features
-4. Write the report **in Korean** following the unified report template
-5. Name the file per the file naming convention (e.g., `kernel-changelog-6.20.md`)
-6. Update the Release Timeline table
-7. Update the Cross-Version Trend Analysis section with any new data points
-8. Update the LTS table if the new version is designated LTS
-9. Update this CLAUDE.md if new subsystem categories or trends emerge
+1. **Research** — Fetch the kernelnewbies page (`https://kernelnewbies.org/Linux_6.XX`) and supplementary sources (LWN, LKML) for headline features
+2. **Extract** — Collect changes following the subsystem categories listed above
+3. **Verify** — Cross-reference performance claims and key features against additional sources
+4. **Analyze** — Identify the top 5-7 headline features with context on purpose and impact
+5. **Write** — Create the report **in Korean** following the unified report template
+6. **Place** — Save to the correct directory (`changelogs/kernel-changelog-6.XX.md`)
+7. **Update timeline** — Update the Release Timeline table
+8. **Update trends** — Update `trends/` reports with any new data points
+9. **Update LTS** — Update the LTS table if the new version is designated LTS
+10. **Update CLAUDE.md** — Add new subsystem categories or trends if they emerge
 
 ## Important Context for AI Assistants
 
