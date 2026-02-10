@@ -75,3 +75,4 @@
 - [보안 상세](security.md)
 - [Rust 지원 상세](rust.md)
 - [아키텍처 상세](architecture.md)
+- [Android SoC 개발 인사이트](android-soc-insights.md)
