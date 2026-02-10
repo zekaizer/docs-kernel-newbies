@@ -4,27 +4,42 @@
 
 This repository tracks, analyzes, and documents Linux kernel version changes sourced from [kernelnewbies.org](https://kernelnewbies.org). It serves as a structured reference for understanding kernel evolution across releases, with a focus on the 6.x series (6.13–6.19+).
 
-The primary artifact is `changelogs/kernel-changelog-6.13-6.19.md`, a comprehensive markdown report covering release timelines, per-version feature breakdowns, and cross-version trend analysis.
+Reports are organized **per single kernel version**. Each version produces two layers of documentation:
+1. **Overview** — A concise summary of all changes across subsystems for that version
+2. **Domain deep-dives** — Detailed research documents for each subsystem with significant changes
 
 ## Repository Structure
 
 ```
 docs-kernel-newbies/
-├── CLAUDE.md                          # Project guide for AI assistants (English)
-├── changelogs/                        # Per-version and multi-version changelog reports
-│   ├── kernel-changelog-6.13-6.19.md  #   Combined report: 6.13–6.19 (Korean)
-│   ├── kernel-changelog-6.20.md       #   Single version report example
+├── CLAUDE.md                              # Project guide for AI assistants (English)
+│
+├── changelogs/                            # Per-version changelog directories
+│   ├── 6.15/
+│   │   ├── overview.md                    #   Version overview: headline features + all subsystems
+│   │   ├── filesystems.md                 #   Deep-dive: Btrfs, XFS, Ext4, Bcachefs, ...
+│   │   ├── memory-management.md           #   Deep-dive: folios, VMA, DAMON, swap, ...
+│   │   ├── networking.md                  #   Deep-dive: TCP/UDP, zero-copy, ...
+│   │   ├── scheduler.md                   #   Deep-dive: sched_ext, EEVDF, ...
+│   │   ├── security.md                    #   Deep-dive: TDX, CCA, SELinux, ...
+│   │   └── ...                            #   (only create files for subsystems with changes)
+│   ├── 6.16/
+│   │   ├── overview.md
+│   │   ├── filesystems.md
+│   │   └── ...
 │   └── ...
-├── trends/                            # Cross-version trend analysis reports
+│
+├── trends/                                # Cross-version trend analysis reports
 │   ├── kernel-trend-analysis-6.13-6.19.md
 │   └── ...
-└── references/                        # Supplementary reference material
-    ├── subsystem-overview.md           #   Kernel subsystem quick reference
+│
+└── references/                            # Supplementary reference material
+    ├── subsystem-overview.md              #   Kernel subsystem quick reference
     └── ...
 ```
 
-Directory purposes:
-- **`changelogs/`** — Version-specific changelog reports (single or multi-version)
+### Directory Purposes
+- **`changelogs/<version>/`** — One directory per kernel version containing overview + domain deep-dives
 - **`trends/`** — Cross-version trend analysis and longitudinal studies
 - **`references/`** — Supplementary material: subsystem overviews, glossaries, LTS tracking
 
@@ -57,10 +72,10 @@ When creating or updating a report, follow this research process:
 
 ### Research Depth Expectations
 
-| Report Type | Minimum Research Depth |
-|-------------|----------------------|
-| Single-version changelog | Full kernelnewbies page + LWN feature articles for headline items |
-| Multi-version changelog | All individual version sources + cross-version diff analysis |
+| Document Type | Minimum Research Depth |
+|---------------|----------------------|
+| Version overview (`overview.md`) | Full kernelnewbies page + LWN feature articles for headline items |
+| Domain deep-dive (e.g., `filesystems.md`) | kernelnewbies subsystem section + LWN articles + LKML patch discussions + relevant commit messages |
 | Trend analysis | All version sources + LKML discussions + commit history for the subsystem |
 
 ### Quality Criteria
@@ -82,48 +97,58 @@ When creating or updating a report, follow this research process:
 
 ### File Naming Convention
 
-All report files follow this naming pattern:
-
-```
-kernel-changelog-<version-range>.md
-```
-
-| Type | Directory | Filename Example | Description |
-|------|-----------|------------------|-------------|
-| Multi-version report | `changelogs/` | `kernel-changelog-6.13-6.19.md` | Combined changelog across versions |
-| Single-version report | `changelogs/` | `kernel-changelog-6.20.md` | Individual version analysis |
-| Trend analysis | `trends/` | `kernel-trend-analysis-6.13-6.19.md` | Cross-version trend report |
-| Reference material | `references/` | `subsystem-overview.md` | Supplementary docs |
+| Location | Filename | Description |
+|----------|----------|-------------|
+| `changelogs/<ver>/` | `overview.md` | Version overview with all subsystems |
+| `changelogs/<ver>/` | `filesystems.md` | Domain deep-dive: filesystems |
+| `changelogs/<ver>/` | `memory-management.md` | Domain deep-dive: memory management |
+| `changelogs/<ver>/` | `io-uring.md` | Domain deep-dive: io_uring |
+| `changelogs/<ver>/` | `scheduler.md` | Domain deep-dive: scheduler |
+| `changelogs/<ver>/` | `networking.md` | Domain deep-dive: networking |
+| `changelogs/<ver>/` | `security.md` | Domain deep-dive: security |
+| `changelogs/<ver>/` | `tracing-bpf.md` | Domain deep-dive: tracing & BPF |
+| `changelogs/<ver>/` | `rust.md` | Domain deep-dive: Rust support |
+| `changelogs/<ver>/` | `virtualization.md` | Domain deep-dive: virtualization |
+| `changelogs/<ver>/` | `block-layer.md` | Domain deep-dive: block layer |
+| `changelogs/<ver>/` | `architecture.md` | Domain deep-dive: architecture |
+| `changelogs/<ver>/` | `drivers.md` | Domain deep-dive: drivers |
+| `changelogs/<ver>/` | `syscalls.md` | Domain deep-dive: syscalls |
+| `trends/` | `kernel-trend-analysis-<range>.md` | Cross-version trend report |
+| `references/` | `subsystem-overview.md` | Supplementary reference docs |
 
 Rules:
-- Lowercase only, hyphen (`-`) as separator (no underscores `_`)
-- Version ranges use hyphen: `6.13-6.19`
+- Version directories use dotted version: `6.15`, `6.16`, etc.
+- Filenames: lowercase, hyphen (`-`) as separator (no underscores `_`)
 - Extension is always `.md` (Markdown)
+- Only create domain deep-dive files for subsystems with notable changes in that release
 
-### Report Structure (Unified Template)
+### Report Structure (Unified Templates)
 
-All kernel changelog reports must follow this structure (written in Korean):
+All reports are written **in Korean**. Each version produces two document types:
+
+#### 1. Overview Template (`overview.md`)
+
+A concise, scannable summary of the entire release.
 
 ```markdown
-# Linux 커널 버전 변경사항 보고서
+# Linux X.XX 커널 변경사항 개요
 
-> 출처: kernelnewbies.org
-> 대상 버전: Linux X.XX – X.XX
+> 출처: kernelnewbies.org, LWN.net
+> 릴리스 날짜: YYYY-MM-DD
 > 작성일: YYYY-MM-DD
 
 ---
 
-## 릴리스 타임라인
-(Table: 버전 | 릴리스 날짜 | 개발 주기)
+## 주요 기능 (Headline Features)
+- Top 5–7 key changes (1–2 sentences each, with impact/purpose)
 
 ---
 
-## Linux X.XX
-
-### 주요 기능 (Headline Features)
-- Top 5–7 key changes
+## 서브시스템 요약
 
 ### 파일시스템
+(3–5 bullet points summarizing key changes; link to `filesystems.md` for details)
+
 ### 메모리 관리
 ### io_uring
 ### 스케줄러
@@ -137,31 +162,71 @@ All kernel changelog reports must follow this structure (written in Korean):
 ### 드라이버
 ### 시스콜
 
-(Omit subsystem sections with no changes for that version)
+(Omit subsystem sections with no changes)
 
 ---
 
-## 교차 버전 트렌드 분석
-
-### 1. Trend name
-(Per-version tracking)
+## 이전 버전 대비 주요 변화
+(Brief comparison with the previous release)
 
 ---
 
-## LTS 버전 현황
-(Table: 버전 | LTS 상태)
-
----
-
-## 요약 통계
+## 관련 문서
+- [파일시스템 상세](filesystems.md)
+- [메모리 관리 상세](memory-management.md)
+- ...
 ```
 
-Key rules:
-- Each version section starts with **주요 기능 (Headline Features)**
-- Subsystem order: 파일시스템 → 메모리 관리 → io_uring → 스케줄러 → 네트워킹 → 보안 → 트레이싱 & BPF → Rust 지원 → 가상화 → 블록 레이어 → 아키텍처 → 드라이버 → 시스콜
-- Omit subsystem sections entirely if no changes exist for that release
-- Every report must end with **교차 버전 트렌드 분석** (Cross-Version Trend Analysis)
-- Release timeline and LTS status use tables
+#### 2. Domain Deep-Dive Template (e.g., `filesystems.md`)
+
+In-depth research document per subsystem.
+
+```markdown
+# Linux X.XX 파일시스템 변경사항
+
+> 출처: kernelnewbies.org, LWN.net, LKML
+> 릴리스: Linux X.XX
+> 작성일: YYYY-MM-DD
+
+---
+
+## 개요
+(2–3 sentence summary of this domain's changes in this release)
+
+---
+
+## Btrfs
+### 변경사항
+- Detailed bullet points with commit references or LWN links where available
+### 배경 및 영향
+- Why this change was made, what workloads benefit, performance data
+
+## Ext4
+### 변경사항
+### 배경 및 영향
+
+## XFS
+...
+
+(One section per component that has changes; omit components with no changes)
+
+---
+
+## 이전 버전과의 연속성
+(How these changes relate to prior releases — e.g., "6.14에서 도입된 atomic write가 6.15에서 COW와 결합")
+
+---
+
+## 참고 자료
+- Links to LWN articles, LKML threads, kernel commits
+```
+
+#### Key Rules
+- Overview: concise bullet points per subsystem, links to deep-dive documents
+- Deep-dive: full detail with background, impact analysis, and source references
+- Subsystem order (when applicable): 파일시스템 → 메모리 관리 → io_uring → 스케줄러 → 네트워킹 → 보안 → 트레이싱 & BPF → Rust 지원 → 가상화 → 블록 레이어 → 아키텍처 → 드라이버 → 시스콜
+- Omit subsystem sections or component sections with no changes
+- Every deep-dive must include **이전 버전과의 연속성** (continuity with prior versions) and **참고 자료** (references)
 
 ### Writing Style
 - Concise, factual descriptions — no hype or marketing language
@@ -216,12 +281,11 @@ These are the major multi-release trajectories identified so far:
 2. **Extract** — Collect changes following the subsystem categories listed above
 3. **Verify** — Cross-reference performance claims and key features against additional sources
 4. **Analyze** — Identify the top 5-7 headline features with context on purpose and impact
-5. **Write** — Create the report **in Korean** following the unified report template
-6. **Place** — Save to the correct directory (`changelogs/kernel-changelog-6.XX.md`)
-7. **Update timeline** — Update the Release Timeline table
+5. **Create version directory** — `mkdir changelogs/6.XX`
+6. **Write overview** — Create `changelogs/6.XX/overview.md` in Korean following the overview template
+7. **Write domain deep-dives** — For each subsystem with notable changes, create a deep-dive document (e.g., `changelogs/6.XX/filesystems.md`) following the deep-dive template
 8. **Update trends** — Update `trends/` reports with any new data points
-9. **Update LTS** — Update the LTS table if the new version is designated LTS
-10. **Update CLAUDE.md** — Add new subsystem categories or trends if they emerge
+9. **Update CLAUDE.md** — Add new subsystem categories or trends if they emerge
 
 ## Important Context for AI Assistants
 
