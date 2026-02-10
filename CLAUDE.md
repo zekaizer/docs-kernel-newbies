@@ -4,9 +4,12 @@
 
 This repository tracks, analyzes, and documents Linux kernel version changes sourced from [kernelnewbies.org](https://kernelnewbies.org). It serves as a structured reference for understanding kernel evolution across releases, with a focus on the 6.x series (6.13–6.19+).
 
-Reports are organized **per single kernel version**. Each version produces two layers of documentation:
+The primary audience is a **software organization developing Android-targeted SoCs**. Upstream kernel changes directly affect BSP (Board Support Package) development, driver porting, performance tuning, and long-term maintenance strategy.
+
+Reports are organized **per single kernel version**. Each version produces three layers of documentation:
 1. **Overview** — A concise summary of all changes across subsystems for that version
 2. **Domain deep-dives** — Detailed research documents for each subsystem with significant changes
+3. **Android SoC Insights** — Actionable analysis of upstream changes from the perspective of an Android SoC SW organization
 
 ## Repository Structure
 
@@ -22,6 +25,7 @@ docs-kernel-newbies/
 │   │   ├── networking.md                  #   Deep-dive: TCP/UDP, zero-copy, ...
 │   │   ├── scheduler.md                   #   Deep-dive: sched_ext, EEVDF, ...
 │   │   ├── security.md                    #   Deep-dive: TDX, CCA, SELinux, ...
+│   │   ├── android-soc-insights.md        #   Android SoC SW perspective: BSP impact, porting notes
 │   │   └── ...                            #   (only create files for subsystems with changes)
 │   ├── 6.16/
 │   │   ├── overview.md
@@ -76,6 +80,7 @@ When creating or updating a report, follow this research process:
 |---------------|----------------------|
 | Version overview (`overview.md`) | Full kernelnewbies page + LWN feature articles for headline items |
 | Domain deep-dive (e.g., `filesystems.md`) | kernelnewbies subsystem section + LWN articles + LKML patch discussions + relevant commit messages |
+| Android SoC insights (`android-soc-insights.md`) | All domain deep-dives + Android GKI release notes + vendor hook changes + CTS/VTS implications |
 | Trend analysis | All version sources + LKML discussions + commit history for the subsystem |
 
 ### Quality Criteria
@@ -113,6 +118,7 @@ When creating or updating a report, follow this research process:
 | `changelogs/<ver>/` | `architecture.md` | Domain deep-dive: architecture |
 | `changelogs/<ver>/` | `drivers.md` | Domain deep-dive: drivers |
 | `changelogs/<ver>/` | `syscalls.md` | Domain deep-dive: syscalls |
+| `changelogs/<ver>/` | `android-soc-insights.md` | Android SoC SW perspective & action items |
 | `trends/` | `kernel-trend-analysis-<range>.md` | Cross-version trend report |
 | `references/` | `subsystem-overview.md` | Supplementary reference docs |
 
@@ -221,9 +227,70 @@ In-depth research document per subsystem.
 - Links to LWN articles, LKML threads, kernel commits
 ```
 
+#### 3. Android SoC Insights Template (`android-soc-insights.md`)
+
+Actionable analysis from the perspective of an Android SoC SW organization.
+
+```markdown
+# Linux X.XX — Android SoC 개발 인사이트
+
+> 릴리스: Linux X.XX
+> 작성일: YYYY-MM-DD
+
+---
+
+## 개요
+(2–3 sentence summary: what this release means for Android SoC BSP teams)
+
+---
+
+## BSP 영향도 분석
+
+### 즉시 대응 필요 (High Impact)
+- Changes that require immediate BSP patches, driver modifications, or API migration
+- Breaking changes, deprecated interfaces, new mandatory features
+
+### 중기 검토 필요 (Medium Impact)
+- Performance improvements worth backporting, optional features beneficial for Android use cases
+- New subsystem capabilities relevant to mobile/embedded workloads
+
+### 참고 사항 (Low Impact / Watch)
+- Upstream trends to monitor for future SoC generations
+- Early-stage features not yet production-ready but strategically important
+
+---
+
+## 드라이버 & HAL 영향
+(GPU, display, camera, audio, sensor, connectivity driver changes relevant to SoC vendors)
+
+## 전력 관리 & 성능
+(CPU frequency, thermal, suspend/resume, energy-aware scheduling, memory power changes)
+
+## 보안 & 인증
+(CTS/VTS implications, SELinux, kernel hardening, GKI compatibility notes)
+
+## 메모리 & 스토리지
+(Memory management changes affecting mobile workloads: low-memory behavior, zram/swap, UFS/eMMC, F2FS)
+
+## Android GKI 호환성
+(Generic Kernel Image impact: new ABI symbols, module interface changes, vendor hook updates)
+
+---
+
+## 권장 액션 아이템
+1. [Priority] Action description
+2. ...
+
+---
+
+## 참고 자료
+- Links to relevant upstream commits, Android kernel docs, GKI release notes
+```
+
 #### Key Rules
 - Overview: concise bullet points per subsystem, links to deep-dive documents
 - Deep-dive: full detail with background, impact analysis, and source references
+- Android SoC Insights: filter upstream changes through the lens of mobile SoC development; focus on actionable items
 - Subsystem order (when applicable): 파일시스템 → 메모리 관리 → io_uring → 스케줄러 → 네트워킹 → 보안 → 트레이싱 & BPF → Rust 지원 → 가상화 → 블록 레이어 → 아키텍처 → 드라이버 → 시스콜
 - Omit subsystem sections or component sections with no changes
 - Every deep-dive must include **이전 버전과의 연속성** (continuity with prior versions) and **참고 자료** (references)
@@ -284,7 +351,8 @@ These are the major multi-release trajectories identified so far:
 5. **Create version directory** — `mkdir changelogs/6.XX`
 6. **Write overview** — Create `changelogs/6.XX/overview.md` in Korean following the overview template
 7. **Write domain deep-dives** — For each subsystem with notable changes, create a deep-dive document (e.g., `changelogs/6.XX/filesystems.md`) following the deep-dive template
-8. **Update trends** — Update `trends/` reports with any new data points
+8. **Write Android SoC insights** — Create `changelogs/6.XX/android-soc-insights.md` analyzing BSP impact, driver/HAL implications, power/performance relevance, and GKI compatibility
+9. **Update trends** — Update `trends/` reports with any new data points
 9. **Update CLAUDE.md** — Add new subsystem categories or trends if they emerge
 
 ## Important Context for AI Assistants
@@ -298,6 +366,8 @@ These are the major multi-release trajectories identified so far:
 - **All reports must be written in Korean** — maintain the same technical precision as English
 - **CLAUDE.md stays in English** — it is a project configuration file, not a report
 - Always follow the file naming convention and unified report template
+- **Android SoC perspective is critical** — every version must include an `android-soc-insights.md` that translates upstream changes into actionable items for BSP, driver, and platform teams
+- Key Android SoC concerns: GKI compatibility, vendor hook stability, ARM64-specific changes, power management, thermal frameworks, display/GPU/camera driver interfaces, low-memory behavior, F2FS/UFS changes, and CTS/VTS security requirements
 
 ## Build / Tooling
 
